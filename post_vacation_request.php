@@ -1,45 +1,45 @@
 <?php
-
-ini_set( 'display_errors', 1 );
-ini_set( 'display_startup_errors', 1 );
-error_reporting( E_ALL );
-
-
-require_once('Email_Service.php');
-$iterable = new Email_Service('-', true, true);
+	ini_set( 'display_errors', 1 );
+	ini_set( 'display_startup_errors', 1 );
+	error_reporting( E_ALL );
 
 
-function phpLog($data){
-	echo "<pre>";
-	print_r($data);
-	echo "<pre>";
-}
+	require_once('Email_Service.php');
+
+	$iterable = new Email_Service('-', true, true);
 
 
-function post_vacation_request() {	
-
-	$email = 'earana@staradvertiser.com';
-
-	$user = $iterable->user_get_by_email($email);
-	phpLog($user);
-	$updatedSubscriptions = array();
-
-	// $sub = $user['content']['user']['dataFields']['real_subscriptions'];
-	foreach ($user['content']['user']['dataFields']['real_subscriptions'] as $key => $subscription) {
-																					//without ampersand we only iterate over a copy of the array and does not affect original array .
-		if( $subscription['publicationId'] == "1000016" && $subscription['circProNameId'] == "1581412")
-		{
-
-			$subscription['stop_date'] = "2019-05-29";
-			$subscription['restart_date'] = "2019-05-30";
-
-
-		}
-		$updatedSubscriptions [] = $subscription;
-
+	function phpLog($data){
+		echo "<pre>";
+		print_r($data);
+		echo "<pre>";
 	}
-	$update = $iterable->user_update_by_email($email, array( "real_subscriptions" => $updatedSubscriptions ) );
 
-}
+	$email = 'earana@-.com';
+	$publicationId = '1000016';
+	$circProNameId = '1581412';
+	$stop_date = "2018-05-29";
+	$restart_date = "2018-06-01";
+
+
+	function vacation_reminder($iterable, $email, $publicationId, $circProNameId, $stop_date, $restart_date ){
+		//calls the user by email to check where to insert dates
+		$user = $iterable->user_get_by_email($email);
+		phpLog($user);
+		//stores the updated subscription
+		$updatedSubscriptions = array();
+		foreach ($user['content']['user']['dataFields']['real_subscriptions'] as $key => $subscription) {
+			if( $subscription['publicationId'] == $publicationId && $subscription['circProNameId'] == $circProNameId)
+			{
+				$subscription['stop_date'] = $stop_date;
+				$subscription['restart_date'] = $restart_date;
+				echo $key;
+			}
+			$updatedSubscriptions [] = $subscription;
+		}
+		$update = $iterable->user_update_by_email($email, array( "real_subscriptions" => $updatedSubscriptions ) );
+	}
+	
+	vacation_reminder($iterable, $email, $publicationId, $circProNameId, $stop_date, $restart_date )
 
 ?>
