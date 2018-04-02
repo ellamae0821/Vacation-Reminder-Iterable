@@ -64,7 +64,7 @@ echo "<pre>";
 //--------------------------------------------------------------------------------------------
 
 // require_once('Email_Service.php');
-// $iterable = new Email_Service('8973c0961bcc48daa470281282ebc545', true, true);
+// $iterable = new Email_Service('-', true, true);
 
 // function humanize($data){
 // 	echo "<pre>";
