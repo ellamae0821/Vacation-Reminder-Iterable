@@ -11,7 +11,7 @@
 function update_user_vacation_dates($email,$publicationId,$circProNameId,$stop_date,$restart_date )
 {
 	require_once($_SERVER['DOCUMENT_ROOT']."/myaccount/resources/scripts/Email_Service.php");
-	$email_service = new Email_Service( "8d8acc947a624660a8b41153b6593d29", false, true );
+	$email_service = new Email_Service( "-", false, true );
 
 	$user = $email_service->user_get_by_email($email);
 	$updatedSubscriptions = array();
@@ -33,7 +33,7 @@ function update_user_vacation_dates($email,$publicationId,$circProNameId,$stop_d
 function update_user_vacation_dates($email,$publicationId,$circProNameId,$stop_date,$restart_date )
 {
 	require_once("Email_Service.php");
-	$email_service = new Email_Service( "8973c0961bcc48daa470281282ebc545", false, true );
+	$email_service = new Email_Service( "-", false, true );
 
 	$user = $email_service->user_get_by_email($email);
 
