@@ -14,7 +14,7 @@ function print_pre($object) {
 $num_subscriber_id = '-';
 $request_stop_date = '2018-04-04';
 
-function getLog($num_subscriber_id, $request_stop_date) {
+function crosscheck_vacation_status($num_subscriber_id, $request_stop_date) {
 	$dbhost = 'localhost';
 	$dbuser = 'online_ella';
 	$dbpass = '-';
@@ -32,43 +32,29 @@ function getLog($num_subscriber_id, $request_stop_date) {
 	print_pre($cust_info);
 	// return $cust_info;
 
-	$circproNameId = $cust_info['num_name_id'];
-	$circproStopDate = $cust_info['num_name_id'];
-	$result = vacationStatus($circproNameId);
+	$num_name_log = $cust_info['num_name_id'];
+	$stop_date_log = $cust_info['dte_stop_date'];
+	$result = vacationStatus($num_name_log);
 	print_pre($result);
-	
 
-	if($circproStopDate== $request_stop_date)
+
+	if($stop_date_log == $result['stop-date'])
 		{
 			$write_result = "UPDATE tbl_vacation_request_log 
 			SET chr_result = 'success'
-			WHERE num_name_id = '$circproNameId'";
+			WHERE num_name_id = '$num_name_log'";
 			$query_update = mysql_query($write_result);
 			echo "Records updated successfully! - SUCCESS";
 		}else{
 			$write_result = "UPDATE tbl_vacation_request_log 
 			SET chr_result = 'fail'
-			WHERE num_name_id = '$circproNameId'";
+			WHERE num_name_id = '$num_name_log'";
 			$query_update = mysql_query($write_result);
 			echo "Records updated successfully! - FAIL";
 		}	
 }
-getLog('-','2018-04-04');
+crosscheck_vacation_status('-','2018-04-04');
 
 
-// function crossChecker($num_subscriber_id, $request_stop_date)
-// {
-// 	require_once("circpro.helpers.php");
-// 	require_once("voiceport.php");
-
-// 	$log_details = getLog($num_subscriber_id, $request_stop_date);
-// 	print_pre($log_details['num_name_id']);
-// 	// // $get = getlog()['circproNameId'];
-// 	// $circproId = $log_details['num_name_id'];
-// 	$result = vacationStatus($log_details['num_name_id']);
-// 	print_pre($result);
-
-// }
-// crossChecker('-','2018-04-04');
 
 ?>
