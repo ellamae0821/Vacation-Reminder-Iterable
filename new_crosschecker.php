@@ -12,8 +12,8 @@
 	date_default_timezone_set("Pacific/Honolulu");
 	$date = date("Y-m-d");
 
-
 	$r = daily_vacation_request($date);
+
 
 	foreach( $r as $key => $v_request)
 	{	
@@ -23,11 +23,9 @@
 
 		if($circpro_vacation['stop-date'] == $v_request['dte_stop_date'])
 		{
-			$write_result = "UPDATE tbl_vacation_request_log 
-			SET chr_result = 'success'
-			WHERE num_name_id = '$num_name_log'";
-			$query_update = mysql_query($write_result);
-			echo "Records updated successfully! - SUCCESS";	
+			update_log_result($v_request['num_account_no'], "success");
+		}else{
+			update_log_result($v_request['num_account_no'], "boooo");
 		}
 	}
 
@@ -54,7 +52,7 @@
 	}
 
 	
-	function daily_vacation_request($account_no) 
+	function update_log_result($account_no, $status) 
 	{
 		$dbhost = 'localhost';
 		$dbuser = 'online_ella';
@@ -65,11 +63,10 @@
 		var_dump( mysql_select_db( $db ) );
 
 		$sql = "UPDATE tbl_vacation_request_log 
-		SET chr_result = 'success'
-		WHERE num_name_id = '$account_no'";
-		
+		SET chr_result = '$status'
+		WHERE num_account_no = '$account_no'";
 		$result = mysql_query($sql);
-		echo "Records updated successfully!" . print_pre($sql);
+		echo "Records updated successfully!" . ($sql);
 
 		return $result;   
 	}
