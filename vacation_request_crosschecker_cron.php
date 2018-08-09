@@ -10,11 +10,16 @@
 	require_once($_SERVER['DOCUMENT_ROOT']."/myaccount/resources/scripts/Email_Service.php");
 
 	date_default_timezone_set("Pacific/Honolulu");
-	$date = date("Y-m-d");
+	$today = date("Y-m-d");
+	$yesterday = date("Y-m-d",strtotime("-1 days"));
 
-	$r = daily_vacation_request($date);
+
+	$r = daily_vacation_request($yesterday, $today);
 	// print_pre($r);
 
+	$s = 0;
+	$e = 0;
+	$f = 0;
 	foreach( $r as $key => $v_request )
 
 	{	
@@ -32,24 +37,40 @@
 		echo "Iterable Start Date: " . $v_request['dte_restart_date'];
 		echo "<br/>";
 		echo "Circpro Start Date: " . date("Y-m-d", strtotime($circpro_vacation['start-date']));
-		print_pre($circpro_vacation);
+		// print_pre($circpro_vacation);
 
-		if( date("Y-m-d", strtotime($circpro_vacation['stop-date'])) == $v_request['dte_stop_date'])
+		
+		if( (date("Y-m-d", strtotime($circpro_vacation['stop-date'])) == $v_request['dte_stop_date']) && 
+			(date("Y-m-d", strtotime($circpro_vacation['start-date'])) == $v_request['dte_restart_date']) ) 
 		{
 			update_log_result("Success", $v_request['num_id']);
 			update_iterable_user_vacation_dates($v_request['chr_email'], $v_request['num_publication_id'], $v_request['num_name_id'], $v_request['dte_stop_date'], $v_request['dte_restart_date']);
 			echo "<br/> SUCCESS";
-		} else{
-			update_log_result("Failed", $v_request['num_id']);
-			echo "<br/> FAILED ";
+			$s++;
+		} else if ( (empty($circpro_vacation['stop-date'] ) ) || ( empty($circpro_vacation['start-date']) ) ) {
+			update_log_result("ERROR: Empty Circpro Date", $v_request['num_id']);
+			echo "<br/> ERROR: Empty Circpro Date / date already passed";
+			$e++;
+		}else{
+			update_log_result("ERROR: Mismatch Dates", $v_request['num_id']);
+			echo "ERROR: Mismatch Dates";
+			$f++;
 		}
 		echo "<br/>______________________________________________________________________________________";
-	}
 
-	function daily_vacation_request($date) 
+	}
+	echo "<br/>Total accounts processed: " .count($r);
+	echo "<br/>Total SUCCESS: $s" ;
+	echo "<br/>Total ERROR: Empty Circpro Date $e" ;
+	echo "<br/>Total ERROR: Mismatch Dates: $f" ;
+
+
+
+	function daily_vacation_request($date1, $date2) 
 	{
 
-		$sql = "SELECT * FROM tbl_vacation_request_log WHERE Date(dte_created) ='$date'";
+		$sql = "SELECT * FROM tbl_vacation_request_log WHERE Date(dte_created) BETWEEN '$date1' AND  '$date2' AND chr_result = ''";
+
 		$sql_r = mysql_query($sql);
 		if ($sql_r)
 		{
